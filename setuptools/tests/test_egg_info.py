@@ -54,10 +54,7 @@ class TestEggInfo:
             env = Environment(env_dir)
             os.chmod(env_dir, stat.S_IRWXU)
             subs = 'home', 'lib', 'scripts', 'data', 'egg-base'
-            env.paths = dict(
-                (dirname, os.path.join(env_dir, dirname))
-                for dirname in subs
-            )
+            env.paths = {dirname: os.path.join(env_dir, dirname) for dirname in subs}
             list(map(os.mkdir, env.paths.values()))
             build_files({
                 env.paths['home']: {
@@ -658,7 +655,7 @@ class TestEggInfo:
         egg_info_dir = os.path.join('.', 'foo.egg-info')
 
         with open(os.path.join(egg_info_dir, 'SOURCES.txt')) as sources_file:
-            sources_lines = list(line.strip() for line in sources_file)
+            sources_lines = [line.strip() for line in sources_file]
 
         for lf in incl_licenses:
             assert sources_lines.count(lf) == 1
@@ -763,7 +760,7 @@ class TestEggInfo:
         egg_info_dir = os.path.join('.', 'foo.egg-info')
 
         with open(os.path.join(egg_info_dir, 'SOURCES.txt')) as sources_file:
-            sources_lines = list(line.strip() for line in sources_file)
+            sources_lines = [line.strip() for line in sources_file]
 
         for lf in incl_licenses:
             assert sources_lines.count(lf) == 1

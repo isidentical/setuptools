@@ -136,15 +136,15 @@ def test_build_deps_on_distutils(request, tmpdir_factory, build_dep):
     build_dir = download_and_extract(request, build_dep, build_target)
     install_target = tmpdir_factory.mktemp('target')
     output = install(build_dir, install_target)
+    allowed_unknowns = [
+        'test_suite',
+        'tests_require',
+        'python_requires',
+        'install_requires',
+        'long_description_content_type',
+    ]
     for line in output.splitlines():
         match = re.search('Unknown distribution option: (.*)', line)
-        allowed_unknowns = [
-            'test_suite',
-            'tests_require',
-            'python_requires',
-            'install_requires',
-            'long_description_content_type',
-        ]
         assert not match or match.group(1).strip('"\'') in allowed_unknowns
 
 

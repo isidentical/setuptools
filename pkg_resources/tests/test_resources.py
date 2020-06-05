@@ -191,7 +191,7 @@ class TestDistro:
         ad.add(Distribution.from_filename("Foo-0.9.egg"))
 
         # Request thing(s) that are available -> list to activate
-        for i in range(3):
+        for _ in range(3):
             targets = list(ws.resolve(parse_requirements("Foo"), ad))
             assert targets == [Foo]
             list(map(ws.add, targets))

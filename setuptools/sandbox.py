@@ -373,10 +373,7 @@ class AbstractSandbox:
         )
 
 
-if hasattr(os, 'devnull'):
-    _EXCEPTIONS = [os.devnull]
-else:
-    _EXCEPTIONS = []
+_EXCEPTIONS = [os.devnull] if hasattr(os, 'devnull') else []
 
 
 class DirectorySandbox(AbstractSandbox):
@@ -454,7 +451,7 @@ class DirectorySandbox(AbstractSandbox):
 
     def _remap_pair(self, operation, src, dst, *args, **kw):
         """Called for path pairs like rename, link, and symlink operations"""
-        if not self._ok(src) or not self._ok(dst):
+        if not (self._ok(src) and self._ok(dst)):
             self._violation(operation, src, dst, *args, **kw)
         return (src, dst)
 

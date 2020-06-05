@@ -373,7 +373,7 @@ class easy_install(Command):
         """
         Fix the install_dir if "--user" was used.
         """
-        if not self.user or not site.ENABLE_USER_SITE:
+        if not (self.user and site.ENABLE_USER_SITE):
             return
 
         self.create_home_path()
@@ -388,7 +388,7 @@ class easy_install(Command):
         for attr in attrs:
             val = getattr(self, attr)
             if val is not None:
-                if os.name == 'posix' or os.name == 'nt':
+                if os.name in ['posix', 'nt']:
                     val = os.path.expanduser(val)
                 val = subst_vars(val, self.config_vars)
                 setattr(self, attr, val)
@@ -468,7 +468,7 @@ class easy_install(Command):
         # Is it a configured, PYTHONPATH, implicit, or explicit site dir?
         is_site_dir = instdir in self.all_site_dirs
 
-        if not is_site_dir and not self.multi_version:
+        if not (is_site_dir or self.multi_version):
             # No?  Then directly test whether it does .pth file processing
             is_site_dir = self.check_pth_processing()
         else:
@@ -483,7 +483,7 @@ class easy_install(Command):
             except (OSError, IOError):
                 self.cant_write_to_target()
 
-        if not is_site_dir and not self.multi_version:
+        if not (is_site_dir or self.multi_version):
             # Can't install non-multi to non-site dir with easy_install
             pythonpath = os.environ.get('PYTHONPATH', '')
             log.warn(self.__no_default_msg, self.install_dir, pythonpath)
@@ -750,7 +750,7 @@ class easy_install(Command):
             self.package_index.add_find_links(
                 dist.get_metadata_lines('dependency_links.txt')
             )
-        if not deps and not self.always_copy:
+        if not (deps or self.always_copy):
             return
         elif requirement is not None and dist.key != requirement.key:
             log.warn("Skipping dependencies for %s", dist)
@@ -780,9 +780,7 @@ class easy_install(Command):
             return not self.zip_ok
         if dist.has_metadata('not-zip-safe'):
             return True
-        if not dist.has_metadata('zip-safe'):
-            return True
-        return False
+        return not dist.has_metadata('zip-safe')
 
     def maybe_move(self, spec, dist_filename, setup_base):
         dst = os.path.join(self.build_directory, spec.key)
@@ -1174,7 +1172,7 @@ class easy_install(Command):
             for key in all_eggs:
                 for dist in all_eggs[key]:
                     eggs.append(self.install_egg(dist.location, setup_base))
-            if not eggs and not self.dry_run:
+            if not (eggs or self.dry_run):
                 log.warn("No eggs found in %s (setup script problem?)",
                          dist_dir)
             return eggs
@@ -1538,7 +1536,7 @@ def extract_wininst_cfg(dist_filename):
             cfg.readfp(six.StringIO(config))
         except configparser.Error:
             return None
-        if not cfg.has_section('metadata') or not cfg.has_section('Setup'):
+        if not (cfg.has_section('metadata') and cfg.has_section('Setup')):
             return None
         return cfg
 
@@ -1561,10 +1559,13 @@ def get_exe_prefixes(exe_filename):
         for info in z.infolist():
             name = info.filename
             parts = name.split('/')
-            if len(parts) == 3 and parts[2] == 'PKG-INFO':
-                if parts[1].endswith('.egg-info'):
-                    prefixes.insert(0, ('/'.join(parts[:2]), 'EGG-INFO/'))
-                    break
+            if (
+                len(parts) == 3
+                and parts[2] == 'PKG-INFO'
+                and parts[1].endswith('.egg-info')
+            ):
+                prefixes.insert(0, ('/'.join(parts[:2]), 'EGG-INFO/'))
+                break
             if len(parts) != 2 or not name.endswith('.pth'):
                 continue
             if name.endswith('-nspkg.pth'):
@@ -1697,8 +1698,7 @@ class RewritePthDistributions(PthDistributions):
     @classmethod
     def _wrap_lines(cls, lines):
         yield cls.prelude
-        for line in lines:
-            yield line
+        yield from lines
         yield cls.postlude
 
     prelude = _one_liner("""
@@ -2118,8 +2118,7 @@ class ScriptWriter:
                 cls._ensure_safe_name(name)
                 script_text = cls.template % locals()
                 args = cls._get_script_args(type_, name, header, script_text)
-                for res in args:
-                    yield res
+                yield from args
 
     @staticmethod
     def _ensure_safe_name(name):

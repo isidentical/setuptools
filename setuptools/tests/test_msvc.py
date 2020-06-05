@@ -44,10 +44,11 @@ def mock_reg(hkcu=None, hklm=None):
     def read_values(cls, base, key):
         """Return dict of registry keys and values."""
         hive = hives.get(base, {})
-        return dict(
-            (k.rpartition('\\')[2], hive[k])
-            for k in hive if k.startswith(key.lower())
-        )
+        return {
+            k.rpartition('\\')[2]: hive[k]
+            for k in hive
+            if k.startswith(key.lower())
+        }
 
     return mock.patch.multiple(
         distutils.msvc9compiler.Reg,
@@ -74,12 +75,12 @@ class TestModulePatch:
         No registry entries or environment variable should lead to an error
         directing the user to download vcpython27.
         """
-        find_vcvarsall = distutils.msvc9compiler.find_vcvarsall
-        query_vcvarsall = distutils.msvc9compiler.query_vcvarsall
-
         with contexts.environment(VS90COMNTOOLS=None):
             with mock_reg():
+                find_vcvarsall = distutils.msvc9compiler.find_vcvarsall
                 assert find_vcvarsall(9.0) is None
+
+                query_vcvarsall = distutils.msvc9compiler.query_vcvarsall
 
                 try:
                     query_vcvarsall(9.0)

@@ -957,10 +957,7 @@ def create_setup_requires_package(path, distname='foobar', version='0.1',
         metadata = []
         for name in use_setup_cfg:
             value = test_setup_attrs.pop(name)
-            if name in 'name version'.split():
-                section = metadata
-            else:
-                section = options
+            section = metadata if name in 'name version'.split() else options
             if isinstance(value, (tuple, list)):
                 value = ';'.join(value)
             section.append('%s: %s' % (name, value))

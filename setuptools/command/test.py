@@ -37,9 +37,7 @@ class ScanningLoader(TestLoader):
             return None
         self._visited.add(module)
 
-        tests = []
-        tests.append(TestLoader.loadTestsFromModule(self, module))
-
+        tests = [TestLoader.loadTestsFromModule(self, module)]
         if hasattr(module, "additional_tests"):
             tests.append(module.additional_tests())
 
@@ -133,7 +131,7 @@ class test(Command):
             self.distribution, 'use_2to3', False)
 
         if with_2to3:
-            # If we run 2to3 we can not do this inplace:
+                # If we run 2to3 we can not do this inplace:
 
             # Ensure metadata is up-to-date
             self.reinitialize_command('build_py', inplace=0)
@@ -146,15 +144,13 @@ class test(Command):
             self.run_command('egg_info')
 
             self.reinitialize_command('build_ext', inplace=0)
-            self.run_command('build_ext')
         else:
             # Without 2to3 inplace works fine:
             self.run_command('egg_info')
 
             # Build extensions in-place
             self.reinitialize_command('build_ext', inplace=1)
-            self.run_command('build_ext')
-
+        self.run_command('build_ext')
         ei_cmd = self.get_finalized_command("egg_info")
 
         old_path = sys.path[:]

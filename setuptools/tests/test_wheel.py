@@ -520,10 +520,7 @@ WHEEL_INSTALL_TESTS = (
 )
 
 
-@pytest.mark.parametrize(
-    'params', WHEEL_INSTALL_TESTS,
-    ids=list(params['id'] for params in WHEEL_INSTALL_TESTS),
-)
+@pytest.mark.parametrize('params', WHEEL_INSTALL_TESTS, ids=[params['id'] for params in WHEEL_INSTALL_TESTS])
 def test_wheel_install(params):
     project_name = params.get('name', 'foo')
     version = params.get('version', '1.0')
@@ -578,8 +575,7 @@ def test_wheel_no_dist_dir():
 
 def test_wheel_is_compatible(monkeypatch):
     def sys_tags():
-        for t in parse_tag('cp36-cp36m-manylinux1_x86_64'):
-            yield t
+        yield from parse_tag('cp36-cp36m-manylinux1_x86_64')
     monkeypatch.setattr('setuptools.wheel.sys_tags', sys_tags)
     assert Wheel(
         'onnxruntime-0.1.2-cp36-cp36m-manylinux1_x86_64.whl').is_compatible()

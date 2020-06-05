@@ -51,7 +51,7 @@ def quiet():
 
 # Convert to POSIX path
 def posix(path):
-    if not six.PY2 and not isinstance(path, str):
+    if not (six.PY2 or isinstance(path, str)):
         return path.replace(os.sep.encode('ascii'), b'/')
     else:
         return path.replace(os.sep, '/')
@@ -390,15 +390,11 @@ class TestSdistTest:
                 if fs_enc == 'cp1252':
                     # Python 3 mangles the UTF-8 filename
                     filename = filename.decode('cp1252')
-                    assert filename in cmd.filelist.files
                 else:
                     filename = filename.decode('mbcs')
-                    assert filename in cmd.filelist.files
             else:
                 filename = filename.decode('utf-8')
-                assert filename in cmd.filelist.files
-        else:
-            assert filename in cmd.filelist.files
+        assert filename in cmd.filelist.files
 
     @classmethod
     def make_strings(cls, item):

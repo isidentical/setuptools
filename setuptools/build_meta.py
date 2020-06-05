@@ -163,8 +163,8 @@ class _BuildMetaBackend(object):
                           if f.endswith('.dist-info')]
 
             if (
-                len(dist_infos) == 0 and
-                len(_get_immediate_subdirectories(dist_info_directory)) == 1
+                not dist_infos
+                and len(_get_immediate_subdirectories(dist_info_directory)) == 1
             ):
 
                 dist_info_directory = os.path.join(

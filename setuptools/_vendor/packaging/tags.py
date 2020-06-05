@@ -128,10 +128,8 @@ def _cpython_tags(py_version, interpreter, abis, platforms):
     for abi in abis:
         for platform_ in platforms:
             yield Tag(interpreter, abi, platform_)
-    for tag in (Tag(interpreter, "abi3", platform_) for platform_ in platforms):
-        yield tag
-    for tag in (Tag(interpreter, "none", platform_) for platform_ in platforms):
-        yield tag
+    yield from (Tag(interpreter, "abi3", platform_) for platform_ in platforms)
+    yield from (Tag(interpreter, "none", platform_) for platform_ in platforms)
     # PEP 384 was first implemented in Python 3.2.
     for minor_version in range(py_version[1] - 1, 1, -1):
         for platform_ in platforms:
@@ -158,19 +156,15 @@ def _generic_abi():
 
 
 def _pypy_tags(py_version, interpreter, abi, platforms):
-    for tag in (Tag(interpreter, abi, platform) for platform in platforms):
-        yield tag
-    for tag in (Tag(interpreter, "none", platform) for platform in platforms):
-        yield tag
+    yield from (Tag(interpreter, abi, platform) for platform in platforms)
+    yield from (Tag(interpreter, "none", platform) for platform in platforms)
 
 
 def _generic_tags(interpreter, py_version, abi, platforms):
-    for tag in (Tag(interpreter, abi, platform) for platform in platforms):
-        yield tag
+    yield from (Tag(interpreter, abi, platform) for platform in platforms)
     if abi != "none":
         tags = (Tag(interpreter, "none", platform_) for platform_ in platforms)
-        for tag in tags:
-            yield tag
+        yield from tags
 
 
 def _py_interpreter_range(py_version):
@@ -388,17 +382,13 @@ def sys_tags():
     if interpreter_name == "cp":
         interpreter = _cpython_interpreter(py_version)
         abis = _cpython_abis(py_version)
-        for tag in _cpython_tags(py_version, interpreter, abis, platforms):
-            yield tag
+        yield from _cpython_tags(py_version, interpreter, abis, platforms)
     elif interpreter_name == "pp":
         interpreter = _pypy_interpreter()
         abi = _generic_abi()
-        for tag in _pypy_tags(py_version, interpreter, abi, platforms):
-            yield tag
+        yield from _pypy_tags(py_version, interpreter, abi, platforms)
     else:
         interpreter = _generic_interpreter(interpreter_name, py_version)
         abi = _generic_abi()
-        for tag in _generic_tags(interpreter, py_version, abi, platforms):
-            yield tag
-    for tag in _independent_tags(interpreter, py_version, platforms):
-        yield tag
+        yield from _generic_tags(interpreter, py_version, abi, platforms)
+    yield from _independent_tags(interpreter, py_version, platforms)

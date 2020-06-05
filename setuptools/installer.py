@@ -86,12 +86,10 @@ def fetch_build_egg(dist, req):
         quiet = False
     else:
         quiet = True
-    if 'PIP_INDEX_URL' in os.environ:
+    if 'PIP_INDEX_URL' in os.environ or 'index_url' not in opts:
         index_url = None
-    elif 'index_url' in opts:
-        index_url = opts['index_url'][1]
     else:
-        index_url = None
+        index_url = opts['index_url'][1]
     if 'find_links' in opts:
         find_links = _fixup_find_links(opts['find_links'][1])[:]
     else:

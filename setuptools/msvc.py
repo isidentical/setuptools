@@ -19,6 +19,7 @@ Microsoft Visual C++ 14.X:
 This may also support compilers shipped with compatible Visual Studio versions.
 """
 
+
 import json
 from io import open
 from os import listdir, pathsep
@@ -40,13 +41,14 @@ if platform.system() == 'Windows':
 else:
     # Mock winreg and environ so the module can be imported on this platform.
 
+
     class winreg:
         HKEY_USERS = None
         HKEY_CURRENT_USER = None
         HKEY_LOCAL_MACHINE = None
         HKEY_CLASSES_ROOT = None
 
-    environ = dict()
+    environ = {}
 
 _msvc9_suppress_errors = (
     # msvc9compiler isn't available on some platforms
@@ -249,7 +251,7 @@ def _msvc14_find_vcvarsall(plat_spec):
     if not isfile(vcvarsall):
         return None, None
 
-    if not vcruntime or not isfile(vcruntime):
+    if not (vcruntime and isfile(vcruntime)):
         vcruntime = None
 
     return vcvarsall, vcruntime
@@ -943,7 +945,6 @@ class SystemInfo:
             install_base = self.ri.lookup(path, 'installdir')
             if install_base:
                 sdkdir = join(install_base, 'WinSDK')
-        if not sdkdir or not isdir(sdkdir):
             # If fail, use default new path
             for ver in self.WindowsSdkVersion:
                 intver = ver[:ver.rfind('.')]
@@ -951,7 +952,6 @@ class SystemInfo:
                 d = join(self.ProgramFiles, path)
                 if isdir(d):
                     sdkdir = d
-        if not sdkdir or not isdir(sdkdir):
             # If fail, use default old path
             for ver in self.WindowsSdkVersion:
                 path = r'Microsoft SDKs\Windows\v%s' % ver
@@ -1386,10 +1386,7 @@ class EnvironmentInfo:
             return [include, join(include, 'gl')]
 
         else:
-            if self.vs_ver >= 14.0:
-                sdkver = self._sdk_subdir
-            else:
-                sdkver = ''
+            sdkver = self._sdk_subdir if self.vs_ver >= 14.0 else ''
             return [join(include, '%sshared' % sdkver),
                     join(include, '%sum' % sdkver),
                     join(include, '%swinrt' % sdkver)]

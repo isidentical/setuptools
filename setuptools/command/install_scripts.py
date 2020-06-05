@@ -59,8 +59,8 @@ class install_scripts(orig.install_scripts):
         target = os.path.join(self.install_dir, script_name)
         self.outfiles.append(target)
 
-        mask = current_umask()
         if not self.dry_run:
+            mask = current_umask()
             ensure_directory(target)
             f = open(target, "w" + mode)
             f.write(contents)

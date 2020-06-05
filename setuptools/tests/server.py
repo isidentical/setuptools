@@ -87,5 +87,4 @@ def path_to_url(path, authority=None):
     base = 'file:'
     if authority is not None:
         base += '//' + authority
-    url = urljoin(base, pathname2url(path))
-    return url
+    return urljoin(base, pathname2url(path))

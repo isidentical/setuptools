@@ -915,10 +915,10 @@ class Distribution(_Distribution):
         # First, expand any aliases
         command = args[0]
         aliases = self.get_option_dict('aliases')
+        import shlex
         while command in aliases:
             src, alias = aliases[command]
             del aliases[command]  # ensure each alias can expand only once!
-            import shlex
             args[:1] = shlex.split(alias, True)
             command = args[0]
 
@@ -976,12 +976,8 @@ class Distribution(_Distribution):
     def iter_distribution_names(self):
         """Yield all packages, modules, and extension names in distribution"""
 
-        for pkg in self.packages or ():
-            yield pkg
-
-        for module in self.py_modules or ():
-            yield module
-
+        yield from self.packages or ()
+        yield from self.py_modules or ()
         for ext in self.ext_modules or ():
             if isinstance(ext, tuple):
                 name, buildinfo = ext

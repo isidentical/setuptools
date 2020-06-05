@@ -84,7 +84,7 @@ def __read_test_cases():
 
     params = functools.partial(dict, base)
 
-    test_cases = [
+    return [
         ('Metadata version 1.0', params()),
         ('Metadata version 1.1: Provides', params(
             provides=['package'],
@@ -140,8 +140,6 @@ def __read_test_cases():
         )),
     ]
 
-    return test_cases
-
 
 @pytest.mark.parametrize('name,attrs', __read_test_cases())
 def test_read_metadata(name, attrs):
@@ -150,11 +148,7 @@ def test_read_metadata(name, attrs):
     dist_class = metadata_out.__class__
 
     # Write to PKG_INFO and then load into a new metadata object
-    if six.PY2:
-        PKG_INFO = io.BytesIO()
-    else:
-        PKG_INFO = io.StringIO()
-
+    PKG_INFO = io.BytesIO() if six.PY2 else io.StringIO()
     metadata_out.write_pkg_file(PKG_INFO)
 
     PKG_INFO.seek(0)

@@ -46,7 +46,7 @@ class upload_docs(upload):
 
     def has_sphinx(self):
         if self.upload_dir is None:
-            for ep in iter_entry_points('distutils.commands', 'build_sphinx'):
+            for _ in iter_entry_points('distutils.commands', 'build_sphinx'):
                 return True
 
     sub_commands = [('build_sphinx', has_sphinx)]
@@ -167,7 +167,7 @@ class upload_docs(upload):
         # auth right with the first request
         schema, netloc, url, params, query, fragments = \
             urllib.parse.urlparse(self.repository)
-        assert not params and not query and not fragments
+        assert not (params or query or fragments)
         if schema == 'http':
             conn = http_client.HTTPConnection(netloc)
         elif schema == 'https':

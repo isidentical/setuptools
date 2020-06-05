@@ -148,13 +148,13 @@ class TestNamespaces:
     @staticmethod
     def install_develop(src_dir, target):
 
-        develop_cmd = [
-            sys.executable,
-            'setup.py',
-            'develop',
-            '--install-dir', str(target),
-        ]
         with src_dir.as_cwd():
+            develop_cmd = [
+                sys.executable,
+                'setup.py',
+                'develop',
+                '--install-dir', str(target),
+            ]
             with test.test.paths_on_pythonpath([str(target)]):
                 subprocess.check_call(develop_cmd)
 

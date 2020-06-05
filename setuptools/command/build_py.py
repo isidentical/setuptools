@@ -47,7 +47,7 @@ class build_py(orig.build_py, Mixin2to3):
 
     def run(self):
         """Build modules, packages, and copy data files to build directory"""
-        if not self.py_modules and not self.packages:
+        if not (self.py_modules or self.packages):
             return
 
         if self.py_modules:
@@ -169,7 +169,7 @@ class build_py(orig.build_py, Mixin2to3):
         init_py = orig.build_py.check_package(self, package, package_dir)
         self.packages_checked[package] = init_py
 
-        if not init_py or not self.distribution.namespace_packages:
+        if not (init_py and self.distribution.namespace_packages):
             return init_py
 
         for pkg in self.distribution.namespace_packages:

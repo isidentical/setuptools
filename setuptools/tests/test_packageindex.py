@@ -195,10 +195,10 @@ class TestPackageIndex:
             assert dists[1].version == vc
 
     def test_download_git_with_rev(self, tmpdir):
-        url = 'git+https://github.example/group/project@master#egg=foo'
         index = setuptools.package_index.PackageIndex()
 
         with mock.patch("os.system") as os_system_mock:
+            url = 'git+https://github.example/group/project@master#egg=foo'
             result = index.download(url, str(tmpdir))
 
         os_system_mock.assert_called()
@@ -217,10 +217,10 @@ class TestPackageIndex:
         assert result == expected_dir
 
     def test_download_git_no_rev(self, tmpdir):
-        url = 'git+https://github.example/group/project#egg=foo'
         index = setuptools.package_index.PackageIndex()
 
         with mock.patch("os.system") as os_system_mock:
+            url = 'git+https://github.example/group/project#egg=foo'
             result = index.download(url, str(tmpdir))
 
         os_system_mock.assert_called()
@@ -233,11 +233,11 @@ class TestPackageIndex:
         os_system_mock.assert_called_once_with(expected)
 
     def test_download_svn(self, tmpdir):
-        url = 'svn+https://svn.example/project#egg=foo'
         index = setuptools.package_index.PackageIndex()
 
         with pytest.warns(UserWarning):
             with mock.patch("os.system") as os_system_mock:
+                url = 'svn+https://svn.example/project#egg=foo'
                 result = index.download(url, str(tmpdir))
 
         os_system_mock.assert_called()

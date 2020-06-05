@@ -86,12 +86,10 @@ def _get_pip_versions():
         'https://github.com/pypa/pip/archive/master.zip',
     ]
 
-    versions = [None] + [
+    return [None] + [
         pytest.param(v, **({} if network else {'marks': pytest.mark.skip}))
         for v in network_versions
     ]
-
-    return versions
 
 
 @pytest.mark.parametrize('pip_version', _get_pip_versions())

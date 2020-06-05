@@ -55,11 +55,7 @@ class BuildBackendCaller(BuildBackendBase):
         os.environ.update(self.env)
         mod = importlib.import_module(self.backend_name)
 
-        if self.backend_obj:
-            backend = getattr(mod, self.backend_obj)
-        else:
-            backend = mod
-
+        backend = getattr(mod, self.backend_obj) if self.backend_obj else mod
         return getattr(backend, name)(*args, **kw)
 
 
@@ -314,7 +310,7 @@ class TestBuildMetaBackend:
         build_backend = self.get_build_backend()
         targz_path = build_backend.build_sdist("temp")
         with tarfile.open(os.path.join("temp", targz_path)) as tar:
-            assert not any('setup.py' in name for name in tar.getnames())
+            assert all('setup.py' not in name for name in tar.getnames())
 
     def test_build_sdist_builds_targz_even_if_zip_indicated(self, tmpdir_cwd):
         files = {
